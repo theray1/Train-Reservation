@@ -1,0 +1,8 @@
+= Small train reservation library
+
+
+This project provides a small library that can be used to build a simple train reservation system.
+It provides a way to create trains, cities, trips, and tickets.
+The library makes sure that trips are consistent with each other (eg. no overlapping), and provides management facilities such as a way to delay a trip.
+
+The library is written in Java and can be compiled using Maven.
