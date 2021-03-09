@@ -83,10 +83,10 @@ public interface TicketReservationSystem {
 
     /**
      * Creates and registers a new trip in the system.
-     * A trip can only be created if the following constraints are satisfied:
-     * - The train must not be already in another trip at the same time as the new trip (using real departure and arrival times).
+     * This new trip must take place *after* the last trip of the chosen train (based on the real arrival time).
+     * In addition, a trip can only be created if the following constraints are satisfied:
      * - The last destination of the train must be in the same city as the origin of the new trip.
-     * - The last arrival of the train must be at least 10 minutes from the departure of the new trip (using real departure and arrival times)..
+     * - The last arrival of the train must be at least 10 minutes from the departure of the new trip (using real departure and arrival times).
      * - The arrival must come after the departure.
      * - The origin must be different from the destination.
      * @return The created registered trip.
@@ -110,8 +110,7 @@ public interface TicketReservationSystem {
 
     /**
      * Adds an arrival delay to a trip.
-     * If needed, this automatically also adds delays to the next trip of the train, so that the next train
-     * departure remains at least 10 minutes from the arrival time of the delayed trip.
+     * Also automatically also adds the delay to the departure of the next trip of the train.
      * @param delay The amount of delay to add.
      */
     void delayTripArrival(Trip trip, Duration delay);

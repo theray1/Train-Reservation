@@ -87,29 +87,26 @@ public class TicketReservationSystemImpl implements TicketReservationSystem {
     @Override
     public Trip createTrip(City origin, City destination, Train train, Instant departure, Instant arrival) throws TripException {
         List<Trip> trainTrips = this.findOrderedTripsOfTrain(train);
-        Optional<Trip> lastTrainTrip = Optional.ofNullable(trainTrips.isEmpty() ? null :
-                        trainTrips.get(trainTrips.size() - 1));
 
-        boolean c1 = trainTrips.stream().allMatch(trip ->
-                !(trip.findRealDepartureTime().isAfter(departure)
-                        && trip.findRealDepartureTime().isBefore(arrival))
-                        && !(trip.findRealArrivalTime().isAfter(departure)
-                        && trip.findRealArrivalTime().isBefore(arrival)));
 
-        boolean c2 = lastTrainTrip.isEmpty() ||
-                lastTrainTrip.get().getDestination() == origin;
+        if (!trainTrips.isEmpty()) {
 
-        boolean c3 = lastTrainTrip.isEmpty() ||
-                Duration.between(lastTrainTrip.get().findRealArrivalTime(), departure)
-                        .compareTo(Duration.ofMinutes(10)) == 1;
+            Trip lastTrainTrip = trainTrips.get(trainTrips.size() - 1);
 
-        boolean c4 = arrival.isAfter(departure);
+            boolean comesAfter = lastTrainTrip.findRealArrivalTime().isBefore(departure);
 
-        boolean c5 = origin != destination;
+            boolean c1 = lastTrainTrip.getDestination() == origin;
 
-        if (!(c1 && c2 && c3 && c4 && c5))
-            throw new TripException();
+            boolean c2 = Duration.between(lastTrainTrip.findRealArrivalTime(), departure)
+                    .compareTo(Duration.ofMinutes(10)) == 1;
 
+            boolean c3 = arrival.isAfter(departure);
+
+            boolean c4 = origin != destination;
+
+            if (!(comesAfter && c1 && c2 && c3 && c4))
+                throw new TripException();
+        }
         Trip trip = new TripImpl(origin, destination, train, departure, arrival);
         trips.add(trip);
         return trip;
@@ -131,7 +128,14 @@ public class TicketReservationSystemImpl implements TicketReservationSystem {
     @Override
     public void delayTripArrival(Trip trip, Duration delay) {
         trip.addArrivalDelay(delay);
-
+        try {
+            Optional<Trip> nextTrip = findNextTripOfTrain(trip.getTrain(), trip);
+            if (nextTrip.isPresent()) {
+                delayTripDeparture(nextTrip.get(), delay);
+            }
+        } catch (TripException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
