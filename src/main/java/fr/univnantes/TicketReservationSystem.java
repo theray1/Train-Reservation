@@ -1,5 +1,6 @@
 package fr.univnantes;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -106,6 +107,8 @@ public interface TicketReservationSystem {
      * - The train must not be already in another trip at the same time as the new trip.
      * - The last destination of the train must be in the same city as the origin of the new trip.
      * - The last arrival of the train must be at least 10 minutes from the departure of the new trip.
+     * - The arrival must come after the departure.
+     * - The origin must be different from the destination.
      * @return The created registered trip.
      * @throws TripException If one of the above constraints was not satisfied.
      */
@@ -116,5 +119,21 @@ public interface TicketReservationSystem {
      * @param trip The trip to cancel.
      */
     void cancelTrip(Trip trip);
+
+
+    /**
+     * Adds a departure delay to a trip.
+     * Also automatically adds an arrival delay of the same amount.
+     * @param delay The amount of delay to add.
+     */
+    void addDepartureDelay(Trip trip, Duration delay);
+
+    /**
+     * Adds an arrival delay to a trip.
+     * If needed, this automatically also adds delays to the next trip of the train, so that the next train
+     * departure remains at least 10 minutes from the arrival time of the delayed trip.
+     * @param delay The amount of delay to add.
+     */
+    void addArrivalDelay(Trip trip, Duration delay);
 }
 
