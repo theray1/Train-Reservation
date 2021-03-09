@@ -1,4 +1,4 @@
-package fr.univnantes;
+package fr.univnantes.trainreservation;
 
 /**
  * Represents a ticket booked for a trip by a customer.
@@ -26,7 +26,17 @@ public interface Ticket {
 
     /**
      * Cancels this ticket. Cannot be undone.
-     * Once a ticket has been cancelled, isCancelled() always returns true.
      */
     void cancel();
+
+    /**
+     * Exchanges the ticket for a new ticket for a different trip.
+     * Once exchanged, a ticket becomes cancelled.
+     * It is only possible to exchange a ticket if the new trip has the same origin and the same destination,
+     * and if the new trip has not been cancelled, and if the new trip planned departure is after the ticket planned departure.
+     * @param trip The trip for the new ticket.
+     * @throws ReservationException If the trip does not satisfy the constraints.
+     * @return The new ticket
+     */
+    Ticket exchangeTicket(Trip trip) throws ReservationException;
 }

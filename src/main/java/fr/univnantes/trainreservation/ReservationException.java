@@ -1,4 +1,4 @@
-package fr.univnantes;
+package fr.univnantes.trainreservation;
 
 /**
  * Thrown when something wrong happens during a ticket reservation.

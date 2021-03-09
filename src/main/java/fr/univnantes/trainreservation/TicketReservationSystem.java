@@ -1,9 +1,10 @@
-package fr.univnantes;
+package fr.univnantes.trainreservation;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a ticket reservation system. It can be used both to manage
@@ -12,27 +13,6 @@ import java.util.List;
  */
 public interface TicketReservationSystem {
 
-    /**
-     * Creates a new Ticket for a given trip, and records the ticket in the trip.
-     * It is only possible to book a ticket if the trip had not already reached the maximum amount of passengers.
-     * @param trip The trip for which a ticket must be booked.
-     * @param passengerName The name of the passenger.
-     * @return The ticket that has been booked.
-     * @throws ReservationException If the trip has already reached the maximum amount of passengers.
-     */
-    Ticket bookTicket(Trip trip, String passengerName) throws ReservationException;
-
-    /**
-     * Exchanges a ticket for a new ticket for a different trip.
-     * Once exchanged, a ticket becomes cancelled.
-     * It is only possible to exchange a ticket if the new trip has the same origin and the same destination,
-     * and if the new trip has not been cancelled, and if the new trip departure is after the ticket departure.
-     * @param ticket The ticket to exchange.
-     * @param trip The trip for the new ticket.
-     * @throws ReservationException If the trip does not satisfy the constraints.
-     * @return The new ticket
-     */
-    Ticket exchangeTicket(Ticket ticket, Trip trip) throws ReservationException;
 
     /**
      * Retrieves the list of all booked tickets (not cancelled).
@@ -49,7 +29,7 @@ public interface TicketReservationSystem {
     /**
      * Finds all the trips eligible for an exchange against a ticket.
      * A trip is eligible for an exchange if the trip has the same origin and the same destination as the ticket,
-     * and if the trip has not been cancelled, and if the trip departure is after the ticket departure.
+     * and if the trip has not been cancelled, and if the trip planned departure is after the ticket planned departure.
      * @param ticket The ticket for which to find exchange possibilities.
      * @return The list of all trips eligible for the exchange.
      */
@@ -104,9 +84,9 @@ public interface TicketReservationSystem {
     /**
      * Creates and registers a new trip in the system.
      * A trip can only be created if the following constraints are satisfied:
-     * - The train must not be already in another trip at the same time as the new trip.
+     * - The train must not be already in another trip at the same time as the new trip (using real departure and arrival times).
      * - The last destination of the train must be in the same city as the origin of the new trip.
-     * - The last arrival of the train must be at least 10 minutes from the departure of the new trip.
+     * - The last arrival of the train must be at least 10 minutes from the departure of the new trip (using real departure and arrival times)..
      * - The arrival must come after the departure.
      * - The origin must be different from the destination.
      * @return The created registered trip.
@@ -126,7 +106,7 @@ public interface TicketReservationSystem {
      * Also automatically adds an arrival delay of the same amount.
      * @param delay The amount of delay to add.
      */
-    void addDepartureDelay(Trip trip, Duration delay);
+    void delayTripDeparture(Trip trip, Duration delay);
 
     /**
      * Adds an arrival delay to a trip.
@@ -134,6 +114,33 @@ public interface TicketReservationSystem {
      * departure remains at least 10 minutes from the arrival time of the delayed trip.
      * @param delay The amount of delay to add.
      */
-    void addArrivalDelay(Trip trip, Duration delay);
+    void delayTripArrival(Trip trip, Duration delay);
+
+    /**
+     * Finds the trip that follows an existing trip of a train.
+     * @param train The train.
+     * @param trip The trip.
+     * @return The trip following the given trip, for the train.
+     * @throws TripException if the trip's train is not the same
+     */
+    Optional<Trip> findNextTripOfTrain(Train train, Trip trip) throws TripException;
+
+    /**
+     * Finds the trip that precedes an existing trip of a train.
+     * @param train The train.
+     * @param trip The trip.
+     * @return The trip preceding the given trip, for the train.
+     * @throws TripException if the trip's train is not the same
+     */
+    Optional<Trip> findPreviousTripOfTrain(Train train, Trip trip) throws TripException;
+
+    /**
+     * Finds and orders all the trips of a given train.
+     * @param train The train.
+     * @return The ordered list of all trips for this train.
+     */
+    List<Trip> findOrderedTripsOfTrain(Train train);
+
+
 }
 

@@ -1,4 +1,4 @@
-package fr.univnantes;
+package fr.univnantes.trainreservation;
 
 /**
  * Represents a train available in the rail system.

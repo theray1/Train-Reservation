@@ -1,4 +1,4 @@
-package fr.univnantes;
+package fr.univnantes.trainreservation;
 
 /**
  * Represents a city with a train station.
