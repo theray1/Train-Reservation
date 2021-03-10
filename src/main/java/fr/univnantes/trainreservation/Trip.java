@@ -65,6 +65,13 @@ public interface Trip {
     void cancel();
 
     /**
+     * Cancels one ticket made for this trip, and register this change in the trip.
+     * @param ticket The ticket to cancel.
+     * @throws ReservationException If the ticket is not for this trip.
+     */
+    void cancelTicket(Ticket ticket) throws ReservationException;
+
+    /**
      * Get the initially planned departure time.
      *
      * @return the initially planned departure time.

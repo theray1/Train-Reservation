@@ -73,9 +73,19 @@ public class TripImpl implements Trip {
     @Override
     public void cancel() {
         this.cancelled = true;
-        for (Ticket ticket: bookedTickets) {
+        for (Ticket ticket : bookedTickets) {
             ticket.cancel();
         }
+    }
+
+    @Override
+    public void cancelTicket(Ticket ticket) throws ReservationException {
+        if (ticket.getTrip() != this) {
+            throw new ReservationException();
+        }
+        ticket.cancel();
+        this.bookedTickets.remove(ticket);
+        this.cancelledTickets.add(ticket);
     }
 
     @Override
