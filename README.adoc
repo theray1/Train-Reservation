@@ -6,3 +6,62 @@ It provides a way to create trains, cities, trips, and tickets.
 The library makes sure that trips are consistent with each other (eg. no overlapping), and provides management facilities such as a way to delay a trip.
 
 The library is written in Java and can be compiled using Maven.
+
+== Compilation
+
+To compile the project, run:
+
+```
+mvn package
+```
+
+== Usage
+
+
+=== Configuring the system instance
+
+Using this library requires creating a central and unique object of type `TicketReservationSystem`.
+This can be obtained with an instance of the class `TicketReservationSystemImpl`.
+
+Creating a `TicketReservationSystemImpl` requires choosing a time zone, which will be used by the system to parse all dates in methors called later on.
+
+```java
+// Choosing the time zone of the system, to parse times/dates
+// Here we use the time zone of the system
+ZoneId timeZone = ZoneId.systemDefault();
+
+// Creating the system
+TicketReservationSystem system = new TicketReservationSystemImpl(timeZone);
+```
+
+
+Once a system is created, it must be populated with basic information, such as cities and trains.
+
+```java
+// Creating and adding cities in the system
+City rennesCity = new CityImpl("Rennes");
+City nantesCity = new CityImpl("Nantes");
+system.addCity(rennesCity);
+system.addCity(nantesCity);
+
+// Creating and adding a train in the system
+Train smallTrain = new TrainImpl("petitTrain", 2);
+system.addTrain(smallTrain);
+```
+
+
+=== Example: creating a trip
+
+The main purpose of the library is to manage _trips_.
+This requires specifying what is the start date and the arrival date of the trip, along with the starting and arrival cities, and the train used for the trip. 
+Many constraints are verified when a trip is created — see the documentation for more information. 
+
+```java  
+Instant departure = TimeManagement.createInstant("2022-05-12 12:00", timeZone);
+Instant arrival = TimeManagement.createInstant("2022-05-12 13:00", timeZone);
+try {
+    system.createTrip(rennesCity, nantesCity, smallTrain, departure, arrival);
+} catch (TripException e) {
+    // Do something if a constraint is unfulfilled
+}
+```
