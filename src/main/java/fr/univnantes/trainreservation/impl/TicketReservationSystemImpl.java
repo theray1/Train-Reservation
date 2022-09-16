@@ -164,4 +164,10 @@ public class TicketReservationSystemImpl implements TicketReservationSystem {
     public List<Trip> findOrderedTripsOfTrain(Train train) {
         return trips.stream().sorted((t1, t2) -> t1.findRealArrivalTime().isBefore(t2.findRealDepartureTime()) ? -1 : 1).collect(Collectors.toList());
     }
+
+    @Override
+    public void addTrain(Train train) {
+        this.trains.add(train);
+
+    }
 }

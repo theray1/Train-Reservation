@@ -82,6 +82,12 @@ public interface TicketReservationSystem {
     void addCity(City city);
 
     /**
+     * Adds a new train in the system.
+     * @param train The train to add.
+     */
+    void addTrain(Train train);
+
+    /**
      * Creates and registers a new trip in the system.
      * This new trip must take place *after* the last trip of the chosen train (based on the real arrival time).
      * In addition, a trip can only be created if the following constraints are satisfied:
